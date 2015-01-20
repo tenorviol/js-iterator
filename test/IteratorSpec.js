@@ -224,6 +224,19 @@ describe('Iterator', function () {
         });
     });
 
+    it('catches thrown errors and returns them via callback', function (done) {
+      var expect = new Error('expected error');
+      Iterator
+        .range(0, 10)
+        .map(function (x) {
+          throw expect;
+        })
+        .next(function (err, value) {
+          should(err).equal(expect);
+          done();
+        });
+    });
+
   });
 
 
