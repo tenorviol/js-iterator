@@ -4,6 +4,25 @@ var Iterator = require('../index');
 
 describe('Iterator', function () {
 
+  describe('new Iterator( next(cb(err, value)) )', function () {
+
+    it('calls `next` on each iteration', function (done) {
+      var i = 1;
+      function next(cb) {
+        cb(null, i++);
+      }
+      var it = new Iterator(next);
+      it.next(function (err, value) {
+        value.should.equal(1);
+        it.next(function (err, value) {
+          value.should.equal(2);
+          done();
+        })
+      });
+    });
+
+  });
+
   describe('new Iterator( next() )', function () {
 
     it('converts the `next()` function to a node-style callback', function (done) {
