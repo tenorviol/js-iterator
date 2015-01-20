@@ -1,4 +1,3 @@
-var async = require('async');
 
 /**
  * Converts a function with a single argument and return value,
@@ -169,16 +168,14 @@ Iterator.prototype = {
   zip: function (that) {
     var self = this;
     function next(cb) {
-      async.parallel([
-        function (asyncCb) { self.next(asyncCb) },
-        function (asyncCb) { that.next(asyncCb) }
-      ], function (err, result) {
+      self.next(function (err, left) {
         if (err) return cb(err);
-        if (undefined === result[0] || undefined === result[1]) {
-          return cb();
-        } else {
-          return cb(null, result);
-        }
+        if (undefined === left) return cb();
+        that.next(function (err, right) {
+          if (err) return cb(err);
+          if (undefined === right) return cb();
+          return cb(null, [ left, right ]);
+        })
       });
     }
     return new Iterator(next);
