@@ -1,6 +1,27 @@
 var async = require('async');
 
 /**
+ * Converts a function with a single argument and return value,
+ *
+ *    f(x) = y
+ *
+ * into a node-style callback function:
+ *
+ *    f1(x, callback(null, y))
+ *
+ * Functions that already have two values will remain unchanged.
+ */
+function callbackize(f) {
+  if (1 === f.length) {
+    var originalF = f;
+    f = function (x, cb) {
+      cb(null, originalF(x))
+    }
+  }
+  return f;
+}
+
+/**
  * All iterators have a `next` method,
  * and all are asynchronous.
  *
@@ -66,7 +87,6 @@ Iterator.prototype = {
   filter: function (f) {
     var self = this;
     var count = 0;
-
     function next(cb) {
       self.next(function (err, item) {
         if (err) return cb(err);
@@ -93,12 +113,7 @@ Iterator.prototype = {
       });
     }
 
-    if (1 === f.length) {
-      var originalF = f;
-      f = function (x, cb) {
-        cb(null, originalF(x))
-      }
-    }
+    f = callbackize(f);
     return new Iterator(next);
   },
 
@@ -111,7 +126,6 @@ Iterator.prototype = {
    */
   map: function (f) {
     var self = this;
-
     function next(cb) {
       self.next(function (err, item) {
         if (err) return cb(err);
@@ -123,12 +137,7 @@ Iterator.prototype = {
       });
     }
 
-    if (1 === f.length) {
-      var originalF = f;
-      f = function (x, cb) {
-        cb(null, originalF(x))
-      }
-    }
+    f = callbackize(f);
     return new Iterator(next);
   },
 
