@@ -30,6 +30,56 @@ describe('Iterator', function () {
 
   });
 
+  describe('filter', function () {
+
+    it('removes values deemed unworthy via function', function (done) {
+      Iterator
+        .range(1, 10)
+        .filter(function (x) {
+          return 0 !== x % 3
+        })
+        .toArray(function (err, result) {
+          result.should.eql([1, 2, 4, 5, 7, 8]);
+          done();
+        });
+    });
+
+    it('does not overflow the stack on very large sequences', function (done) {
+      Iterator
+        .range(0, 54321)
+        .filter(function (x) { return false; })
+        .toArray(function (err, result) {
+          result.should.eql([]);
+          done();
+        });
+    });
+
+    it('can use a callback function', function (done) {
+      Iterator
+        .range(1, 10)
+        .filter(function (x, cb) {
+          setTimeout(function () {
+            cb(null, 0 !== x % 3);
+          });
+        })
+        .toArray(function (err, result) {
+          result.should.eql([1, 2, 4, 5, 7, 8]);
+          done();
+        });
+    });
+
+    it('can use a callback without overflowing the stack', function (done) {
+      Iterator
+        .range(0, 54321)
+        .filter(function (x, cb) { cb(null, false); })
+        .toArray(function (err, result) {
+          result.should.eql([]);
+          done();
+        });
+    });
+
+  });
+
   describe('map', function () {
 
     it('modifies all values as iterated', function (done) {
