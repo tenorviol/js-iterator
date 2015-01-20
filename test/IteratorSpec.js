@@ -23,6 +23,7 @@ describe('Iterator', function () {
 
   });
 
+
   describe('new Iterator( next() )', function () {
 
     it('converts the `next()` function to a node-style callback', function (done) {
@@ -41,6 +42,7 @@ describe('Iterator', function () {
     });
 
   });
+
 
   describe('it.toArray( cb(err, result) )', function () {
 
@@ -85,6 +87,7 @@ describe('Iterator', function () {
     });
 
   });
+
 
   describe('it.filter( f(x): boolean )', function () {
 
@@ -133,6 +136,7 @@ describe('Iterator', function () {
 
   });
 
+
   describe('it.filter( f(x, cb(err, keep: boolean)) )', function () {
 
     it('removes values when !keep', function (done) {
@@ -160,6 +164,7 @@ describe('Iterator', function () {
     });
 
   });
+
 
   describe('it.map( f(x) )', function () {
 
@@ -197,6 +202,7 @@ describe('Iterator', function () {
 
   });
 
+
   describe('it.map( f(x, cb(err, y)) )', function () {
 
     it('applies function `f` to all values', function (done) {
@@ -213,6 +219,7 @@ describe('Iterator', function () {
     });
 
   });
+
 
   describe('it.take(n)', function () {
 
