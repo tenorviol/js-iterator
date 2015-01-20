@@ -141,10 +141,6 @@ Iterator.prototype = {
     return new Iterator(next);
   },
 
-  reduce: function () {
-
-  },
-
   /**
    * Limit the number of iterable items.
    */
