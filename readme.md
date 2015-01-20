@@ -89,6 +89,58 @@ d6.take(4).zipWithIndex().toArray(function (err, result) {
 ```
 
 
+api
+---
+
+### new Iterator( next() )
+
+Create a new iterator from a `next` function.
+On each iteration,
+`next` will be called once,
+and the result will be passed to the callback.
+To terminate the iterator,
+return `undefined`.
+If an exception is thrown,
+it will be caught and passed as the `err` of the consumer callback.
+
+```js
+var n = 0;
+var it = new Iterator(function () {
+  if (n < 3) {
+    return n++;
+  } else {
+    return;
+  }
+});
+it.toArray(function (err, result) {
+  console.log(result);
+});
+```
+```js
+[ 0, 1, 2 ]
+```
+
+### new Iterator( next(cb(err, value)) )
+
+The `next` function may also be asynchronous.
+
+```js
+var n = 0;
+new Iterator(function (cb) {
+  setTimeout(function () {
+    if (n < 3) {
+      return cb(null, n++);
+    } else {
+      return cb();
+    }
+  }, 0);
+}).toArray(function (err, result) {
+  console.log(result);
+});
+```
+
+
+
 design
 ------
 
@@ -128,6 +180,6 @@ E.g.
 ### goals
 
 1. Provide a callback-based iterator pattern.
-2. Generators: `next`, `forEach`, `toArray`.
+2. Consumers: `next`, `forEach`, `toArray`.
 3. Chainable modifiers: `filter`, `fold`, `map`, `take`, `zip`.
 4. Consolidated error handling, the first error gets returned.
