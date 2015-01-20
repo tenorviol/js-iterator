@@ -41,6 +41,17 @@ describe('Iterator', function () {
       });
     });
 
+    it('catches thrown errors and returns them via callback', function (done) {
+      var expect = new Error('expected error');
+      var it = new Iterator(function () {
+        throw expect;
+      });
+      it.next(function (err, value) {
+        should(err).equal(expect);
+        done();
+      });
+    });
+
   });
 
 
@@ -130,6 +141,19 @@ describe('Iterator', function () {
         .toArray(function (err, result) {
           err.should.equal(expect);
           should(result).equal(undefined);
+          done();
+        });
+    });
+
+    it('catches thrown errors and returns them via callback', function (done) {
+      var expect = new Error('expected error');
+      Iterator
+        .range(0, 10)
+        .filter(function (x) {
+          throw expect;
+        })
+        .next(function (err, value) {
+          should(err).equal(expect);
           done();
         });
     });

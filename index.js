@@ -2,7 +2,7 @@
 /**
  * Converts a function no arguments and return value,
  *
- *    f() = y
+ *    f(): value
  *
  * into a congruent node-style callback function:
  *
@@ -13,7 +13,11 @@
 function callbackize0(f) {
   if (1 <= f.length) return f;
   function g(cb) {
-    cb(null, f());
+    try {
+      cb(null, f());
+    } catch (err) {
+      cb(err);
+    }
   }
   return g;
 }
@@ -21,7 +25,7 @@ function callbackize0(f) {
 /**
  * Converts a function with a single argument and return value,
  *
- *    f(x) = y
+ *    f(x): value
  *
  * into a congruent node-style callback function:
  *
@@ -32,7 +36,11 @@ function callbackize0(f) {
 function callbackize1(f) {
   if (2 <= f.length) return f;
   function g(x, cb) {
-    cb(null, f(x))
+    try {
+      cb(null, f(x))
+    } catch (err) {
+      cb(err);
+    }
   }
   return g;
 }
