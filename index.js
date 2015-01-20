@@ -1,9 +1,23 @@
 
-// next(cb(err, item))
+/**
+ * All iterators have a `next` method,
+ * and all are asynchronous.
+ *
+ *    next(cb(err, item))
+ */
 function Iterator(next) {
   this.next = next;
 }
 
+/**
+ * The maximum depth to descend the stack before using `setTimeout`.
+ * When working with lengthy iterators,
+ * a larger value could speed the result.
+ * On the other hand,
+ * a large value could also cause the stack to overflow.
+ * Rule of thumb:
+ * Keep this value less than half of the stack size in your environment.
+ */
 Iterator.maxStack = 500;
 
 Iterator.prototype = {
@@ -11,7 +25,7 @@ Iterator.prototype = {
    * Exercise the iterator until `undefined`,
    * returning all results as a single array.
    *
-   * cb(err, result)
+   *    cb(err, result)
    */
   toArray: function (cb) {
     var self = this;
@@ -19,7 +33,7 @@ Iterator.prototype = {
     function iterate() {
       self.next(function (err, item) {
         if (err) return cb(err);
-        if (item === undefined) {
+        if (undefined === item) {
           // This helps with really long pointless stack traces
           // by resetting the stack.
           return setTimeout(function () {
@@ -27,9 +41,9 @@ Iterator.prototype = {
           }, 0);
         } else {
           result.push(item);
-          if (result.length % Iterator.maxStack === 0) {
+          if (0 === result.length % Iterator.maxStack) {
             // This helps with stack overflow by resetting the stack.
-            // We do it intermittently because it's slooooowwwwwww.
+            // It's done intermittently because it's slooooowwwwwww.
             return setTimeout(iterate, 0);
           } else {
             return iterate();
@@ -40,42 +54,48 @@ Iterator.prototype = {
     iterate();
   },
 
-  // f(x): y
-  // f(x, cb(err, y))
+  /**
+   * Modify each value of the iterator,
+   * using either a direct function or a callback.
+   *
+   *    f(x): y
+   *    f(x, cb(err, y))
+   */
   map: function (f) {
     var self = this;
 
     function next(cb) {
       self.next(function (err, item) {
-        if (err) {
-          cb(err);
-        } else if (item === undefined) {
-          cb();
+        if (err) return cb(err);
+        if (undefined === item) {
+          return cb();
         } else {
-          cb(null, f(item));
+          return cb(null, f(item));
         }
       });
     }
 
     function nextCallback(cb) {
       self.next(function (err, item) {
-        if (err) {
-          cb(err);
-        } else if (item === undefined) {
-          cb();
+        if (err) return cb(err);
+        if (undefined === item) {
+          return cb();
         } else {
-          f(item, cb);
+          return f(item, cb);
         }
       });
     }
 
-    if (f.length === 1) {
+    if (1 === f.length) {
       return new Iterator(next);
     } else {
       return new Iterator(nextCallback);
     }
   },
 
+  /**
+   * Limit the number of iterable items.
+   */
   take: function (n) {
     var self = this;
     var i = 0;
@@ -91,6 +111,9 @@ Iterator.prototype = {
   }
 };
 
+/**
+ * for-loop type iterator from a start value to an end value.
+ */
 Iterator.range = function (start, end, step) {
   step = step || 1;
   var current = start;
@@ -98,12 +121,11 @@ Iterator.range = function (start, end, step) {
     if (current < end) {
       var result = current;
       current += step;
-      cb(null, result);
+      return cb(null, result);
     } else {
-      cb();
+      return cb();
     }
   }
-
   return new Iterator(next);
 };
 
