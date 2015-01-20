@@ -74,6 +74,20 @@ Iterator.prototype = {
     } else {
       return new Iterator(nextCallback);
     }
+  },
+
+  take: function (n) {
+    var self = this;
+    var i = 0;
+    function next(cb) {
+      if (i < n) {
+        i++;
+        return self.next(cb);
+      } else {
+        return cb();
+      }
+    }
+    return new Iterator(next);
   }
 };
 

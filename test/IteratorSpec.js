@@ -58,6 +58,20 @@ describe('Iterator', function () {
 
   });
 
+  describe('take', function () {
+
+    it('limits the number of iterator results', function (done) {
+      Iterator
+        .range(0, 10)
+        .take(5)
+        .toArray(function (err, result) {
+          result.should.eql([0, 1, 2, 3, 4]);
+          done();
+        });
+    });
+
+  });
+
   describe('Iterator.range(start, end [, step])', function() {
 
     it('produces the contiguous set of numbers [start, end)', function (done) {
