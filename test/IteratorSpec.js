@@ -4,7 +4,7 @@ var Iterator = require('../index');
 
 describe('Iterator', function () {
 
-  describe('toArray', function () {
+  describe('it.toArray( cb(err, result) )', function () {
 
     it('calls back an array containing all iterated results', function (done) {
       Iterator
@@ -15,7 +15,7 @@ describe('Iterator', function () {
         });
     });
 
-    it('does not overflow the stack even on very large sets', function (done) {
+    it('does not overflow the stack on large sequences', function (done) {
       var size = 54321;
       Iterator
         .range(0, size)
@@ -48,9 +48,9 @@ describe('Iterator', function () {
 
   });
 
-  describe('filter', function () {
+  describe('it.filter( f(x): boolean )', function () {
 
-    it('removes values deemed unworthy via function', function (done) {
+    it('removes values when !f(x)', function (done) {
       Iterator
         .range(1, 10)
         .filter(function (x) {
@@ -62,34 +62,10 @@ describe('Iterator', function () {
         });
     });
 
-    it('does not overflow the stack on very large sequences', function (done) {
+    it('does not overflow the stack on large sequences', function (done) {
       Iterator
         .range(0, 54321)
         .filter(function (x) { return false; })
-        .toArray(function (err, result) {
-          result.should.eql([]);
-          done();
-        });
-    });
-
-    it('can use a callback function', function (done) {
-      Iterator
-        .range(1, 10)
-        .filter(function (x, cb) {
-          setTimeout(function () {
-            cb(null, 0 !== x % 3);
-          });
-        })
-        .toArray(function (err, result) {
-          result.should.eql([1, 2, 4, 5, 7, 8]);
-          done();
-        });
-    });
-
-    it('can use a callback without overflowing the stack', function (done) {
-      Iterator
-        .range(0, 54321)
-        .filter(function (x, cb) { cb(null, false); })
         .toArray(function (err, result) {
           result.should.eql([]);
           done();
@@ -119,28 +95,43 @@ describe('Iterator', function () {
 
   });
 
-  describe('map', function () {
+  describe('it.filter( f(x, cb(err, keep: boolean)) )', function () {
 
-    it('modifies all values as iterated', function (done) {
+    it('removes values when !keep', function (done) {
+      Iterator
+        .range(1, 10)
+        .filter(function (x, cb) {
+          setTimeout(function () {
+            cb(null, 0 !== x % 3);
+          });
+        })
+        .toArray(function (err, result) {
+          result.should.eql([1, 2, 4, 5, 7, 8]);
+          done();
+        });
+    });
+
+    it('does not overflow the stack on large sequences', function (done) {
+      Iterator
+        .range(0, 54321)
+        .filter(function (x, cb) { cb(null, false); })
+        .toArray(function (err, result) {
+          result.should.eql([]);
+          done();
+        });
+    });
+
+  });
+
+  describe('it.map( f(x) )', function () {
+
+    it('applies function `f` to all values', function (done) {
       Iterator
         .range(0, 10)
         .map(function (x) {
           return x * 2;
         }).toArray(function (err, result) {
           result.should.eql([0, 2, 4, 6, 8, 10, 12, 14, 16, 18]);
-          done();
-        });
-    });
-
-    it('can use a callback function', function (done) {
-      Iterator
-        .range(0, 3)
-        .map(function (x, cb) {
-          setTimeout(function () {
-            cb(null, x * 3);
-          }, 1);
-        }).toArray(function (err, result) {
-          result.should.eql([0, 3, 6]);
           done();
         });
     });
@@ -168,7 +159,24 @@ describe('Iterator', function () {
 
   });
 
-  describe('take', function () {
+  describe('it.map( f(x, cb(err, y)) )', function () {
+
+    it('applies function `f` to all values', function (done) {
+      Iterator
+        .range(0, 3)
+        .map(function (x, cb) {
+          setTimeout(function () {
+            cb(null, x * 3);
+          }, 1);
+        }).toArray(function (err, result) {
+          result.should.eql([0, 3, 6]);
+          done();
+        });
+    });
+
+  });
+
+  describe('it.take(n)', function () {
 
     it('limits the number of iterator results', function (done) {
       Iterator
@@ -202,9 +210,9 @@ describe('Iterator', function () {
   });
 
 
-  describe('zip', function () {
+  describe('it.zip( anotherIterator )', function () {
 
-    it('combines two iterators', function (done) {
+    it('combines this with that other iterator', function (done) {
       Iterator
         .range(3, 7)
         .zip(Iterator.range(2, 6))
@@ -214,7 +222,7 @@ describe('Iterator', function () {
         })
     });
 
-    it('terminates when the first iterator runs out of results', function (done) {
+    it('terminates when this iterator runs out of results', function (done) {
       Iterator
         .range(2, 6)
         .zip(Iterator.range(0, 10))
@@ -224,7 +232,7 @@ describe('Iterator', function () {
         })
     });
 
-    it('terminates when the second iterator runs out of results', function (done) {
+    it('terminates when that other iterator runs out of results', function (done) {
       Iterator
         .range(0, 10)
         .zip(Iterator.range(2, 6))
@@ -237,7 +245,7 @@ describe('Iterator', function () {
   });
 
 
-  describe('zipWithIndex', function () {
+  describe('it.zipWithIndex()', function () {
 
     it('adds the index to the iterated results', function (done) {
       Iterator
