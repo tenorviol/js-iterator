@@ -56,6 +56,18 @@ Iterator.prototype = {
   },
 
   /**
+   * Test values in the iterator,
+   * removing any value that does not pass.
+   * `f(true)` will leave values in the iterator.
+   *
+   *    f(x): boolean
+   *    f(x, cb(err, boolean))
+   */
+  filter: function (f) {
+
+  },
+
+  /**
    * Modify each value of the iterator,
    * using either a direct function or a callback.
    *
@@ -92,6 +104,10 @@ Iterator.prototype = {
     } else {
       return new Iterator(nextCallback);
     }
+  },
+
+  reduce: function () {
+
   },
 
   /**
@@ -135,6 +151,13 @@ Iterator.prototype = {
       });
     }
     return new Iterator(next);
+  },
+
+  /**
+   * Zip with the index number of the value.
+   */
+  zipWithIndex: function () {
+    return this.zip(Iterator.range(0));
   }
 };
 
