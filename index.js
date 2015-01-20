@@ -118,27 +118,18 @@ Iterator.prototype = {
         if (undefined === item) {
           return cb();
         } else {
-          return cb(null, f(item));
-        }
-      });
-    }
-
-    function nextCallback(cb) {
-      self.next(function (err, item) {
-        if (err) return cb(err);
-        if (undefined === item) {
-          return cb();
-        } else {
           return f(item, cb);
         }
       });
     }
 
     if (1 === f.length) {
-      return new Iterator(next);
-    } else {
-      return new Iterator(nextCallback);
+      var originalF = f;
+      f = function (x, cb) {
+        cb(null, originalF(x))
+      }
     }
+    return new Iterator(next);
   },
 
   reduce: function () {
