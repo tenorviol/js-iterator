@@ -33,6 +33,9 @@ it.next(function (err, item) {
   console.log(item);
 });
 ```
+```js
+0.13976101111620665
+```
 
 The random iterator is infinite,
 so conversion to an array would take forever.
@@ -44,6 +47,13 @@ it.take(5).toArray(function (err, result) {
   console.log(result);
 });
 ```
+```js
+[ 0.8878921919967979,
+  0.8639499587006867,
+  0.8767323752399534,
+  0.7335713140200824,
+  0.9920800605323166 ]
+```
 
 To convert the random real sequence [0,1)
 into a random integer sequence [1,6]
@@ -54,16 +64,25 @@ var d6 = it.map(function (x) {
   return Math.floor(x * 6) + 1;
 });
 
-d6.take(10).toArray(function (err, result) {
+d6.take(4).toArray(function (err, result) {
   console.log(result);
 });
+```
+```js
+[ 6, 1, 4, 1 ]
 ```
 
 To keep track of how many times we rolled the d6,
 use the `zipWithIndex` method.
 
 ```js
-d6.take(10).zipWithIndex().toArray(function (err, result) {
+d6.take(4).zipWithIndex().toArray(function (err, result) {
   console.log(result);
 });
+```
+```js
+[ [ 6, 0 ],
+  [ 6, 1 ],
+  [ 4, 2 ],
+  [ 2, 3 ] ]
 ```
