@@ -72,26 +72,6 @@ Iterator.prototype = {
         if (err) return cb(err);
         if (undefined === item) {
           return cb();
-        } else if (f(item)) {
-          return cb(null, item);
-        } else {
-          count++;
-          if (0 === count % Iterator.maxStack) {
-            setTimeout(function () {
-              next(cb);
-            }, 0);
-          } else {
-            return next(cb);
-          }
-        }
-      });
-    }
-
-    function nextCallback(cb) {
-      self.next(function (err, item) {
-        if (err) return cb(err);
-        if (undefined === item) {
-          return cb();
         } else {
           f(item, function (err, keep) {
             if (err) return cb(err);
@@ -100,11 +80,12 @@ Iterator.prototype = {
             } else {
               count++;
               if (0 === count % Iterator.maxStack) {
+                // avoid stack overflow by resetting the stack
                 setTimeout(function () {
-                  nextCallback(cb);
+                  next(cb);
                 }, 0);
               } else {
-                return nextCallback(cb);
+                return next(cb);
               }
             }
           });
@@ -113,10 +94,12 @@ Iterator.prototype = {
     }
 
     if (1 === f.length) {
-      return new Iterator(next);
-    } else {
-      return new Iterator(nextCallback);
+      var originalF = f;
+      f = function (x, cb) {
+        cb(null, originalF(x))
+      }
     }
+    return new Iterator(next);
   },
 
   /**
