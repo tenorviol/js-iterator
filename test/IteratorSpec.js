@@ -158,7 +158,22 @@ describe('Iterator', function () {
   });
 
 
-  describe('Iterator.range(start, end [, step])', function() {
+  describe('zipWithIndex', function () {
+
+    it('adds the index to the iterated results', function (done) {
+      Iterator
+        .range(3, 9)
+        .zipWithIndex()
+        .toArray(function (err, result) {
+          result.should.eql([[3,0], [4,1], [5,2], [6,3], [7,4], [8,5]]);
+          done();
+        })
+    });
+
+  });
+
+
+  describe('Iterator.range(start [, end [, step]])', function() {
 
     it('produces the contiguous set of numbers [start, end)', function (done) {
       Iterator
@@ -188,6 +203,16 @@ describe('Iterator', function () {
         });
       });
     });
+
+    it('may continue indefinitely if end is undefined', function (done) {
+      Iterator
+        .range(3)
+        .take(5)
+        .toArray(function (err, result) {
+          result.should.eql([3, 4, 5, 6, 7]);
+          done();
+        });
+    })
 
   });
 

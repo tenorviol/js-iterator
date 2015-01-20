@@ -203,7 +203,7 @@ Iterator.range = function (start, end, step) {
   step = step || 1;
   var current = start;
   function next(cb) {
-    if (current < end) {
+    if (undefined === end || current < end) {
       var result = current;
       current += step;
       return cb(null, result);
