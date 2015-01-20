@@ -1,33 +1,51 @@
 
 /**
+ * Converts a function no arguments and return value,
+ *
+ *    f() = y
+ *
+ * into a congruent node-style callback function:
+ *
+ *    g(cb(null, f()))
+ *
+ * Functions with 1 or more parameters will remain unchanged.
+ */
+function callbackize0(f) {
+  if (1 <= f.length) return f;
+  function g(cb) {
+    cb(null, f());
+  }
+  return g;
+}
+
+/**
  * Converts a function with a single argument and return value,
  *
  *    f(x) = y
  *
- * into a node-style callback function:
+ * into a congruent node-style callback function:
  *
- *    f1(x, callback(null, y))
+ *    g(x, cb(null, f(x)))
  *
- * Functions that already have two values will remain unchanged.
+ * Functions with 2 or more parameters will remain unchanged.
  */
-function callbackize(f) {
-  if (1 === f.length) {
-    var originalF = f;
-    f = function (x, cb) {
-      cb(null, originalF(x))
-    }
+function callbackize1(f) {
+  if (2 <= f.length) return f;
+  function g(x, cb) {
+    cb(null, f(x))
   }
-  return f;
+  return g;
 }
 
 /**
  * All iterators have a `next` method,
  * and all are asynchronous.
  *
- *    next(cb(err, item))
+ *    next(): value
+ *    next(cb(err, value))
  */
 function Iterator(next) {
-  this.next = next;
+  this.next = callbackize0(next);
 }
 
 /**
@@ -112,7 +130,7 @@ Iterator.prototype = {
       });
     }
 
-    f = callbackize(f);
+    f = callbackize1(f);
     return new Iterator(next);
   },
 
@@ -136,7 +154,7 @@ Iterator.prototype = {
       });
     }
 
-    f = callbackize(f);
+    f = callbackize1(f);
     return new Iterator(next);
   },
 
