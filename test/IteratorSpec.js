@@ -28,6 +28,34 @@ describe('Iterator', function () {
 
   });
 
+  describe('map', function () {
+
+    it('modifies all values as iterated', function (done) {
+      Iterator
+        .range(0, 10)
+        .map(function (x) {
+          return x * 2;
+        }).toArray(function (err, result) {
+          result.should.eql([0, 2, 4, 6, 8, 10, 12, 14, 16, 18]);
+          done();
+        });
+    });
+
+    it('can use a callback function', function (done) {
+      Iterator
+        .range(0, 3)
+        .map(function (x, cb) {
+          setTimeout(function () {
+            cb(null, x * 3);
+          }, 1);
+        }).toArray(function (err, result) {
+          result.should.eql([0, 3, 6]);
+          done();
+        });
+    });
+
+  });
+
   describe('Iterator.range(start, end [, step])', function() {
 
     it('produces the contiguous set of numbers [start, end)', function (done) {
