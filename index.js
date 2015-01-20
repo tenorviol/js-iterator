@@ -4,24 +4,39 @@ function Iterator(next) {
   this.next = next;
 }
 
+Iterator.maxStack = 500;
+
 Iterator.prototype = {
-  // cb(err, result)
+  /**
+   * Exercise the iterator until `undefined`,
+   * returning all results as a single array.
+   *
+   * cb(err, result)
+   */
   toArray: function (cb) {
     var self = this;
     var result = [];
     function iterate() {
       self.next(function (err, item) {
-        if (err) {
-          cb(err);
-        } else if (item === undefined) {
-          cb(null, result);
+        if (err) return cb(err);
+        if (item === undefined) {
+          // This helps with really long pointless stack traces
+          // by resetting the stack.
+          return setTimeout(function () {
+            cb(null, result);
+          }, 0);
         } else {
           result.push(item);
-          setTimeout(iterate, 0);
+          if (result.length % Iterator.maxStack === 0) {
+            // This helps with stack overflow by resetting the stack.
+            // We do it intermittently because it's slooooowwwwwww.
+            return setTimeout(iterate, 0);
+          } else {
+            return iterate();
+          }
         }
       });
     }
-
     iterate();
   },
 
