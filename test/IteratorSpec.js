@@ -28,6 +28,24 @@ describe('Iterator', function () {
         });
     });
 
+    it('returns the first error encountered', function (done) {
+      var expect = new Error("expected error");
+      Iterator
+        .range(0, 10)
+        .map(function (x, cb) {
+          if (x === 5) {
+            cb(expect);
+          } else {
+            cb(null, x);
+          }
+        })
+        .toArray(function (err, result) {
+          err.should.equal(expect);
+          should(result).equal(undefined);
+          done();
+        });
+    });
+
   });
 
   describe('filter', function () {
@@ -78,6 +96,27 @@ describe('Iterator', function () {
         });
     });
 
+    it('returns the first error encountered', function (done) {
+      var expect = new Error("expected error");
+      Iterator
+        .range(0, 10)
+        .map(function (x, cb) {
+          if (x === 5) {
+            cb(expect);
+          } else {
+            cb(null, x);
+          }
+        })
+        .filter(function (x) {
+          return 0 !== (x % 2);
+        })
+        .toArray(function (err, result) {
+          err.should.equal(expect);
+          should(result).equal(undefined);
+          done();
+        });
+    });
+
   });
 
   describe('map', function () {
@@ -106,6 +145,27 @@ describe('Iterator', function () {
         });
     });
 
+    it('returns the first error encountered', function (done) {
+      var expect = new Error("expected error");
+      Iterator
+        .range(0, 10)
+        .map(function (x, cb) {
+          if (x === 5) {
+            cb(expect);
+          } else {
+            cb(null, x);
+          }
+        })
+        .map(function (x) {
+          return x * 2;
+        })
+        .toArray(function (err, result) {
+          err.should.equal(expect);
+          should(result).equal(undefined);
+          done();
+        });
+    });
+
   });
 
   describe('take', function () {
@@ -116,6 +176,25 @@ describe('Iterator', function () {
         .take(5)
         .toArray(function (err, result) {
           result.should.eql([0, 1, 2, 3, 4]);
+          done();
+        });
+    });
+
+    it('returns the first error encountered', function (done) {
+      var expect = new Error("expected error");
+      Iterator
+        .range(0, 10)
+        .map(function (x, cb) {
+          if (x === 5) {
+            cb(expect);
+          } else {
+            cb(null, x);
+          }
+        })
+        .take(6)
+        .toArray(function (err, result) {
+          should(err).equal(expect);
+          should(result).equal(undefined);
           done();
         });
     });
