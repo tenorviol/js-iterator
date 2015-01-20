@@ -1,3 +1,4 @@
+var async = require('async');
 
 /**
  * All iterators have a `next` method,
@@ -106,6 +107,32 @@ Iterator.prototype = {
       } else {
         return cb();
       }
+    }
+    return new Iterator(next);
+  },
+
+  /**
+   * Combines two iterables into a single Iterable.
+   * The resultant Iterable's `next` function
+   * will return an array of results from both iterables.
+   * The array will be in order `[this.next(), that.next()]`.
+   *
+   *    that: Iterable
+   */
+  zip: function (that) {
+    var self = this;
+    function next(cb) {
+      async.parallel([
+        function (asyncCb) { self.next(asyncCb) },
+        function (asyncCb) { that.next(asyncCb) }
+      ], function (err, result) {
+        if (err) return cb(err);
+        if (undefined === result[0] || undefined === result[1]) {
+          return cb();
+        } else {
+          return cb(null, result);
+        }
+      });
     }
     return new Iterator(next);
   }

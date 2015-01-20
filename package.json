@@ -11,5 +11,8 @@
   "devDependencies": {
     "mocha": "^2.1.0",
     "should": "^4.6.1"
+  },
+  "dependencies": {
+    "async": "^0.9.0"
   }
 }

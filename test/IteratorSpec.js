@@ -72,6 +72,42 @@ describe('Iterator', function () {
 
   });
 
+
+  describe('zip', function () {
+
+    it('combines two iterators', function (done) {
+      Iterator
+        .range(3, 7)
+        .zip(Iterator.range(2, 6))
+        .toArray(function (err, result) {
+          result.should.eql([[3,2], [4,3], [5,4], [6,5]]);
+          done();
+        })
+    });
+
+    it('terminates when the first iterator runs out of results', function (done) {
+      Iterator
+        .range(2, 6)
+        .zip(Iterator.range(0, 10))
+        .toArray(function (err, result) {
+          result.should.eql([[2,0], [3,1], [4,2], [5,3]]);
+          done();
+        })
+    });
+
+    it('terminates when the second iterator runs out of results', function (done) {
+      Iterator
+        .range(0, 10)
+        .zip(Iterator.range(2, 6))
+        .toArray(function (err, result) {
+          result.should.eql([[0,2], [1,3], [2,4], [3,5]]);
+          done();
+        })
+    });
+
+  });
+
+
   describe('Iterator.range(start, end [, step])', function() {
 
     it('produces the contiguous set of numbers [start, end)', function (done) {
