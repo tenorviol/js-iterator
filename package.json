@@ -1,18 +1,22 @@
 {
   "name": "js-iterator",
   "version": "0.1.0",
-  "description": "",
+  "description": "Chainable asynchronous iterators in javascript",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/tenorviol/js-iterator.git"
+  },
   "main": "index.js",
   "scripts": {
     "test": "mocha --watch test"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Chris Johnson <tenorviol@yahoo.com>",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^0.9.0"
+  },
   "devDependencies": {
     "mocha": "^2.1.0",
     "should": "^4.6.1"
-  },
-  "dependencies": {
-    "async": "^0.9.0"
   }
 }
