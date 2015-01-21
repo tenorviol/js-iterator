@@ -233,4 +233,29 @@ Iterator.range = function (start, end, step) {
   return new Iterator(next);
 };
 
+/**
+ * Runs the `factory` (aka `next`) function exactly once,
+ * and returns the same result forever.
+ */
+Iterator.singleton = function (factory) {
+  var queue = [];
+  var result;
+  function next(cb) {
+    if (result) {
+      return cb.apply({}, result);
+    }
+    queue.push(cb);
+    // run the factory exactly once
+    if (1 !== queue.length) return;
+    factory(function (err, value) {
+      result = arguments;
+      queue.forEach(function (queuedCb) {
+        queuedCb.apply({}, result);
+      });
+      queue = null;
+    });
+  }
+  return new Iterator(next);
+}
+
 module.exports = Iterator;

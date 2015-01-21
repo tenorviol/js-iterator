@@ -385,4 +385,44 @@ describe('Iterator', function () {
 
   });
 
+  describe('Iterator.singleton( factory(cb(err, value)) )', function () {
+
+    it('calls the factory method once, and returns the result forever', function (done) {
+      var expect;
+      Iterator
+        .singleton(function (cb) {
+          expect = Math.random();
+          cb(null, expect);
+        })
+        .take(5)
+        .toArray(function (err, result) {
+          should(err).be.null;
+          result.length.should.equal(5);
+          // all values should be the same
+          result.forEach(function (item) {
+            item.should.equal(expect);
+          })
+          done();
+        })
+    });
+
+    it('returns an error forever if factory returned an error initially', function (done) {
+      var expect;
+      var it = Iterator
+        .singleton(function (cb) {
+          expect = new Error(Math.random());
+          cb(expect);
+        });
+      it.next(function (err, result) {
+        var err1 = err;
+        err.should.equal(expect);
+        it.next(function (err, result) {
+          err.should.equal(err1);
+          done();
+        })
+      });
+    });
+
+  });
+
 });
