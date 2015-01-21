@@ -258,6 +258,25 @@ describe('Iterator', function () {
   });
 
 
+  describe('it.singleton()', function () {
+
+    it('calls the next method once, and returns that result forever', function (done) {
+      new Iterator(Math.random)
+        .singleton()
+        .take(5)
+        .toArray(function (err, result) {
+          var first = result[0];
+          first.should.be.a.Number;
+          result.forEach(function (value) {
+            value.should.equal(first);
+          });
+          done();
+        });
+    });
+
+  });
+
+
   describe('it.take(n)', function () {
 
     it('limits the number of iterator results', function (done) {

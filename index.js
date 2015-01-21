@@ -167,6 +167,17 @@ Iterator.prototype = {
   },
 
   /**
+   * Calls the `next` function once,
+   * and returns the same result forever.
+   */
+  singleton: function () {
+    var self = this;
+    return new Iterator.singleton(function (cb) {
+      self.next(cb);
+    });
+  },
+
+  /**
    * Limit the number of iterable items.
    */
   take: function (n) {
