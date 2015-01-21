@@ -143,6 +143,32 @@ Iterator.prototype = {
   },
 
   /**
+   *    f(x)
+   *    cb(err)
+   */
+  forEach: function (f, cb) {
+    var self = this;
+    var count = 0;
+    function iterate() {
+      self.next(function (err, value) {
+        if (err) return cb(err);
+        if (undefined === value) return cb(null);
+        f(value);
+        count++;
+        if (0 === count % Iterator.maxStack) {
+          // avoid stack overflow by resetting the stack
+          setTimeout(function () {
+            iterate();
+          }, 0);
+        } else {
+          iterate();
+        }
+      });
+    }
+    iterate();
+  },
+
+  /**
    * Modify each value of the iterator,
    * using either a direct function or a callback.
    *

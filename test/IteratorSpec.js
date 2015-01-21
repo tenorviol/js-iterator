@@ -190,6 +190,26 @@ describe('Iterator', function () {
   });
 
 
+  describe('it.forEach( f(x), cb(err) )', function () {
+
+    it('executes `f` on every value in the sequence, without overflowing the stack', function (done) {
+      var total = 0;
+      var low = 1;
+      var high = 54321;
+      Iterator
+        .range(low, high)
+        .forEach(function (x) {
+          total += x;
+        }, function (err) {
+          should(err).be.null;
+          total.should.equal((high - low + 1) * (high - low) / 2)
+          done();
+        });
+    });
+
+  });
+
+
   describe('it.map( f(x) )', function () {
 
     it('applies function `f` to all values', function (done) {
