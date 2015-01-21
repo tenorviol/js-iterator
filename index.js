@@ -249,6 +249,7 @@ Iterator.range = function (start, end, step) {
  * and returns the same result forever.
  */
 Iterator.singleton = function (factory) {
+  factory = callbackize0(factory);
   var queue = [];
   var result;
   function next(cb) {

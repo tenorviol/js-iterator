@@ -400,7 +400,50 @@ describe('Iterator', function () {
           result.should.eql([3, 4, 5, 6, 7]);
           done();
         });
-    })
+    });
+
+  });
+
+  describe('Iterator.singleton( factory() )', function () {
+
+    it('calls the factory method once, and returns the result forever', function (done) {
+      Iterator
+        .singleton(Math.random)
+        .take(5)
+        .toArray(function (err, result) {
+          should(err).be.null;
+          result.length.should.equal(5);
+          var first = result[0];
+          first.should.be.a.Number;
+          result.forEach(function (item) {
+            item.should.equal(first);
+          });
+          done();
+        });
+    });
+
+    it('returns an error forever if the factory throws', function (done) {
+      var expect = new Error('some error');
+      var firstTime = true;
+      var it = Iterator
+        .singleton(function () {
+          if (firstTime) {
+            firstTime = false;
+            throw expect;
+          } else {
+            return 'foo';
+          }
+        });
+      it.next(function (err, value) {
+        err.should.equal(expect);
+        should(value).equal(undefined);
+        it.next(function (err, value) {
+          err.should.equal(expect);
+          should(value).equal(undefined);
+          done();
+        });
+      });
+    });
 
   });
 
@@ -438,7 +481,7 @@ describe('Iterator', function () {
         it.next(function (err, result) {
           err.should.equal(err1);
           done();
-        })
+        });
       });
     });
 
